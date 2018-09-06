@@ -1,0 +1,40 @@
+/* required style*/
+
+.none {
+    display: none;
+}
+
+/* optional styles */
+
+table tr th, table tr td {
+    font-size: 1.2rem;
+}
+
+.row {
+    margin: 20px 20px 20px 20px;
+    width: 100%;
+}
+
+.glyphicon {
+    font-size: 20px;
+}
+
+.glyphicon-plus {
+    float: right;
+}
+
+a.glyphicon {
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.glyphicon-trash {
+    margin-left: 10px;
+}
+
+.alert {
+    width: 50%;
+    border-radius: 0;
+    margin-top: 10px;
+    margin-left: 10px;
+}

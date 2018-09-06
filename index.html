@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="utf-8">
+    <title>AngularJS CRUD</title>
+    <link rel="stylesheet" href="assets/css/bootstrap-3.3.7-dist/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+        crossorigin="anonymous">
+    <script src="assets/js/jquery.min.js"></script>
+    <script src="assets/css/bootstrap-3.3.7-dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+        crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="assets/css/bootstrap-3.3.7-dist/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
+        crossorigin="anonymous">
+
+    <script src="assets/js/angular.js"></script>
+    <link href="assets/css/style.css" rel="stylesheet">
+    <script src="assets/js/bootbox.min.js"></script>
+    <script src="app/app.js"></script>
+    <script src="app/fihrist.js"></script>
+
+</head>
+
+<body ng-app="crudApp">
+    <div class="container" ng-controller="fihristController" ng-init="fihristKayitlariniGetir()">
+        <div class="row">
+            <div class="panel panel-default users-content">
+                <div class="panel-heading">Fihrist
+                    <a href="javascript:void(0);" class="glyphicon glyphicon-plus" ng-click="yeniKayitIcinHazirla()"></a>
+                </div>
+                <div class="alert alert-danger none">
+                    <p></p>
+                </div>
+                <div class="alert alert-success none">
+                    <p></p>
+                </div>
+
+                <div class="panel-body none formData">
+                    <form class="form form-inline" name="fihristForm">
+                        <div class="form-group">
+                            <label>İsim: </label>
+                            <input type="text" class="form-control" name="name" ng-model="FihristAraVerisi.Isim" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Soyisim: </label>
+                            <input type="text" class="form-control" name="email" ng-model="FihristAraVerisi.Soyisim" required />
+                        </div>
+                        <div class="form-group">
+                            <label>İzahat: </label>
+                            <input type="text" class="form-control" name="phone" ng-model="FihristAraVerisi.Izahat" />
+                        </div>
+                        <div class="form-group">
+                            <label>Grubu {{FihristAraVerisi.RbtGruplar}}</label>
+                            <select class="form-control" name="repeatSelect" ng-model="FihristAraVerisi.RbtGruplar">
+                                <option ng-repeat="Grup in Gruplar" value="{{Grup.OKytNo}}">{{Grup.GrupIsmi}}</option>
+                            </select>
+                        </div>
+                        <div class="form-check">
+                            <input type="checkbox" id="faalCheck" class="form-check-input" ng-model="FihristAraVerisi.Faal">
+                            <label class="form-check-label" for="faalCheck">Faal Mi?</label>
+                        </div>
+                        <a href="javascript:void(0);" class="btn btn-warning" ng-click="vazgec()">Vazgeç</a>
+                        <a href="javascript:void(0);" class="btn btn-success" ng-hide="FihristAraVerisi.OKytNo" ng-click="fihristEkle()">Kaydı
+                            Ekle
+                        </a>
+                        <a href="javascript:void(0);" class="btn btn-success" ng-hide="!FihristAraVerisi.OKytNo" ng-click="fihristGuncelle()">Kaydı
+                            Güncelle
+                        </a>
+                    </form>
+                </div>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th width="5%">#</th>
+                            <th width="20%">İsim</th>
+                            <th width="20%">Soyisim</th>
+                            <th width="20%">İzahat</th>
+                            <th width="14%">Grubu</th>
+                            <th width="10%">Faal</th>
+                            <th width="10%">İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat-start="Fihrist in FihristKayitlar | orderBy:'-OKytNo'">
+                            <td>{{$index + 1}}</td>
+                            <td>{{Fihrist.Isim}}</td>
+                            <td>{{Fihrist.Soyisim}}</td>
+                            <td>{{Fihrist.Izahat}}</td>
+                            <td>
+                                {{GruplarOKytNoDanIsim(Fihrist.RbtGruplar)}}
+                            </td>
+                            <td>
+                                <span class="glyphicon" ng-class="{'glyphicon-ok': Fihrist.Faal==1, 'glyphicon-remove': Fihrist.Faal==0}"></span>
+                            </td>
+                            <td>
+                                <a href="javascript:void(0);" class="glyphicon glyphicon-edit" ng-click="fihristiDuzenlemeyeHazirla(Fihrist)"></a>
+                                <a href="javascript:void(0);" class="glyphicon glyphicon-trash" ng-click="fihristiSilmeyeHazirla(Fihrist)"></a>
+                                <a href="javascript:void(0);" class="glyphicon glyphicon-arrow-down" ng-click="fihristDetayGoster(Fihrist.OKytNo, 'telefonlarGorunum' + Fihrist.OKytNo)"></a>
+                            </td>
+                        </tr>
+                        <tr ng-repeat-end class="none {{'telefonlarGorunum' + Fihrist.OKytNo}}">
+                            <td></td>
+                            <td colspan="6"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th width="5%">#</th>
+                        <th width="20%">Numara</th>
+                        <th width="20%">Grubu</th>
+                        <th width="10%">İşlem</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat-start="Telefon in TelefonKayitlari | orderBy:'-OKytNo'">
+                        <td>{{$index + 1}}</td>
+                        <td>{{Telefon.TelefonNo}}</td>
+                        <td>
+                            {{GruplarOKytNoDanIsim(Fihrist.RbtGruplar)}}
+                        </td>
+                        <td>
+                            <span class="glyphicon" ng-class="{'glyphicon-ok': Fihrist.Faal==1, 'glyphicon-remove': Fihrist.Faal==0}"></span>
+                        </td>
+                        <td>
+                            <a href="javascript:void(0);" class="glyphicon glyphicon-edit" ng-click="fihristiDuzenlemeyeHazirla(Fihrist)"></a>
+                            <a href="javascript:void(0);" class="glyphicon glyphicon-trash" ng-click="fihristiSilmeyeHazirla(Fihrist)"></a>
+                            <a href="javascript:void(0);" class="glyphicon glyphicon-arrow-down" ng-click="detayGoster('telefonlarGorunum' + Fihrist.OKytNo)"></a>
+                        </td>
+                    </tr>
+                    <tr ng-repeat-end class="none {{'telefonlarGorunum' + Fihrist.OKytNo}}">
+                        <td></td>
+                        <td colspan="6"></td>
+                    </tr>
+                </tbody>
+            </table>
+
+
+        </div>
+    </div>
+
+</body>
+
+</html>

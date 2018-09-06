@@ -1,0 +1,1 @@
+uyg = angular.module("crudApp", []);
